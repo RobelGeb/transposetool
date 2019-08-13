@@ -47,7 +47,7 @@ public class Transpose {
       System.out.println(Arrays.toString(newNotes.toArray()));
       
       
-      DrawingPanel panel = new DrawingPanel(40 * CON, 20 * CON);
+      DrawingPanel panel = new DrawingPanel(40 * CON, 10 * CON);
 
       Graphics g = panel.getGraphics();
       Font font = new Font("Times New Roman", Font.PLAIN, 24);
@@ -152,15 +152,18 @@ public class Transpose {
    
    public static void drawIt(Graphics g, ArrayList<String> newNotes, String[] notesForDraw) {
       int subtractor = 0;
-      for (int i = 1; i <= 6; i++) {
+      for (int i = 1; i <= 5; i++) {
          g.drawLine(CON, CON + (CON * i), 39 * CON, CON + (CON * i));
       }
       g.drawLine(CON, CON * 2, CON, CON * 6);
       g.drawLine(CON * 39, CON * 2, CON * 39, CON * 6);
       for (int i = 0; i < newNotes.size(); i++) {
          for (int j = 0; j < notesForDraw.length; j++) {
-            if (newNotes.get(i).equals(notesForDraw[j])) {
+            if (newNotes.get(i).contains(notesForDraw[j])) {
                subtractor = j;
+               if (j < 2) {
+                  g.drawLine(CON * 2 + (i * 2 * CON), CON + (CON * 7) - 15, CON * 2 + 30 + (i * 2 * CON), CON + (CON * 7) - 15);
+               }
                break;
             }
          }
