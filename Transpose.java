@@ -140,6 +140,8 @@ public class Transpose {
             if (newNotes.get(i).equals(notes[j])) {
                if ((j + halfSteps) > notes.length - 1) { 
                   newNotes.set(i, notes[(j + halfSteps) - notes.length]); 
+               } else if ((j + halfSteps) < 0) {
+                  newNotes.set(i, notes[(j + halfSteps) + notes.length]);
                } else {
                   newNotes.set(i, notes[j + halfSteps]);
                }
