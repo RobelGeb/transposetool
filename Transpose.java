@@ -220,7 +220,7 @@ public class Transpose {
                if (j < 2) {
                   g.drawLine(CON * 2 + (i * 2 * CON), CON + (CON * 6), CON * 2 + 20 + (i * 2 * CON), CON + (CON * 6));
                }
-               g.drawString(newNotes.get(i), CON * 2 + (i * 2 * CON), (CON / 2) * (16 - subtractor) - (4 - oct) * 75);
+               g.drawString(newNotes.get(i), CON * 2 + (i * 2 * CON), (CON / 2) * (16 - subtractor) + (4 - oct) * 75);
                break;
             }
          }
@@ -231,4 +231,3 @@ public class Transpose {
    }
 }
    
-// add numbers to the original notes scheme to identify octaves 
