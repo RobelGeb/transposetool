@@ -1,5 +1,3 @@
-package jfugueLearning;
-
 //import java.awt.*;
 import java.util.*;
 import java.io.*;
@@ -21,7 +19,8 @@ public class Transpose {
       oldNotes = noteReader(inputNotes, oldNotes);
       //timeSig = timeReader(inputNotes, timeSig);
       octaves = octReader(inputOct, octaves);
-      
+
+      //reference notes for the half stepping to be based off of
       String[] notes = new String[] {"Bb", "B", "C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A"};
       //String[] notesForDraw = new String[] {"B", "C", "D", "E", "F", "G", "A"}; 
       
