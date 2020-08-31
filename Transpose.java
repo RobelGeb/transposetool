@@ -1,34 +1,32 @@
-//Robel Gebremichael
-//Transposition tool; small personal project
+package jfugueLearning;
 
-import java.awt.*;
+//import java.awt.*;
 import java.util.*;
 import java.io.*;
-//import org.jfugue.player.Player;
-
+import org.jfugue.player.Player;
 
 public class Transpose {
-
-   public static final int CON = 25; 
-
+	   
    public static void main(String[] args) throws FileNotFoundException{
       
       //scans in the source file for the notes, their octave values, and time signature
-      Scanner inputNotes = new Scanner(new File("og_notes_num.txt"));
-      Scanner inputOct = new Scanner(new File("og_notes_num.txt"));
-      ArrayList<String> newNotes = new ArrayList<String>();
-      ArrayList<String> timeSig = new ArrayList<String>();
+      Scanner inputNotes = new Scanner(new File("notes.txt"));
+      Scanner inputOct = new Scanner(new File("notes.txt"));
+      ArrayList<String> oldNotes = new ArrayList<>();
+      ArrayList<String> newNotes = new ArrayList<>();
+      //ArrayList<String> timeSig = new ArrayList<String>();
       ArrayList<Integer> octaves = new ArrayList<Integer>();
 
       //rips notes, time signature, and octave values from .txt file, respectively
-      newNotes = noteReader(inputNotes, newNotes);
-      timeSig = timeReader(inputNotes, timeSig);
+      oldNotes = noteReader(inputNotes, oldNotes);
+      //timeSig = timeReader(inputNotes, timeSig);
       octaves = octReader(inputOct, octaves);
       
       String[] notes = new String[] {"Bb", "B", "C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A"};
-      String[] notesForDraw = new String[] {"B", "C", "D", "E", "F", "G", "A"}; 
+      //String[] notesForDraw = new String[] {"B", "C", "D", "E", "F", "G", "A"}; 
       
-      //stores all instruments in a map based on key, ranging from C, Eb, F, and Bb
+      //stores all instruments in a map based on key, ranging from C, Eb, F, and Bb (keys based
+      //on the strings in the notes array.
       HashMap<String, String> instrumentMap = 
          new HashMap<String, String>() {
             {
@@ -40,28 +38,41 @@ public class Transpose {
    
       Scanner console = new Scanner(System.in);
             
-      String first = "";
-      String second = "";
+      String firstInstrument = "";
+      String secondInstrument = "";
       String firstKey = "";
       String secondKey = "";
             
-      first = intro(console, first);
-      second = transedInst(console, second);
+      firstInstrument = intro(console);
+      secondInstrument = transedInst(console);
       
-      firstKey = findKeyOne(console, first, firstKey, instrumentMap);
-      secondKey = findKeyTwo(console, second, secondKey, instrumentMap);
+      firstKey = findKeyOne(firstInstrument, firstKey, instrumentMap);
+      System.out.println("Would you like to hear how the notes sound before transposition? (y/n)");
+      String ans = console.next();
+      if (ans.equals("y")) {
+         playNotes(oldNotes, firstInstrument);
+      }
+      secondKey = findKeyTwo(secondInstrument, secondKey, instrumentMap);
       
       int halfSteps = findSteps(firstKey, secondKey, notes);
       
-      System.out.println(Arrays.toString(newNotes.toArray()));
-      newNotes = halfStepper(console, halfSteps, notes, newNotes);  
+      System.out.println(Arrays.toString(oldNotes.toArray()));
+      newNotes = halfStepper(console, halfSteps, notes, oldNotes);  
+      
       
       System.out.println(halfSteps + " half steps later...");
+      for (int i = 0; i < 5; i++) {
+         System.out.println('.');
+      }
       System.out.println(Arrays.toString(newNotes.toArray()));
-      
+      System.out.println("Would you like to hear how the notes sound after transposition? (y/n)");
+      ans = console.next();
+      if (ans.equals("y")) {
+         playNotes(newNotes, secondInstrument);
+      }
       
       /*
-      FOR DRAWING "SHEET MUSIC"
+      FOR DRAWING MAKESHIFT "SHEET MUSIC"
       
       DrawingPanel panel = new DrawingPanel(40 * CON, 10 * CON);
 
@@ -76,24 +87,19 @@ public class Transpose {
    
    //pre: takes in scanner object and arraylist that stores the notes
    //post:takes every note in the inputted text document and puts it in an Array List
-   public static ArrayList<String> noteReader(Scanner inputNotes, ArrayList<String> newNotes) {
+   public static ArrayList<String> noteReader(Scanner inputNotes, ArrayList<String> oldNotes) {
       if (inputNotes.hasNextLine()) {
          String line = inputNotes.nextLine();
          Scanner newLine = new Scanner(line);
-         int tokenNum = 0;
          while (newLine.hasNext()) {
-            if (tokenNum % 2 == 0) {
-               newNotes.add(newLine.next());
-            } else {
-               String toss = newLine.next();
-            }
-            tokenNum++;
+            oldNotes.add(newLine.next().substring(0, 1));
          }
       }
-      return newNotes;
+      return oldNotes;
    }
    
-   //gets time signature from txt doc
+   //returns time signature from txt doc
+   /*
    public static ArrayList<String> timeReader(Scanner inputNotes, ArrayList<String> timeSig) {
       if (inputNotes.hasNextLine()) {
          String line = inputNotes.nextLine();
@@ -104,43 +110,41 @@ public class Transpose {
       }
       return timeSig;
    }
+   */
    
+   //returns octave values for each note from txt doc
    public static ArrayList<Integer> octReader(Scanner inputOct, ArrayList<Integer> octaves) {
       if (inputOct.hasNextLine()) {
          String line = inputOct.nextLine();
          Scanner newLine = new Scanner(line);
-         int tokenNum = 0;
          while (newLine.hasNext()) {
-            if (tokenNum % 2 == 1) {
-               octaves.add(newLine.nextInt());
-            }  else {
-               String toss = newLine.next();
-            }
-            tokenNum++;
+            octaves.add(Integer.parseInt(newLine.next().substring(1, 2)));
          }
       }
       return octaves; 
    }
    
    //takes console input for what instrument you want to transpose your music from
-   public static String intro(Scanner console, String first) {
+   public static String intro(Scanner console) {
       System.out.println("Music Transposition Tool.");
       System.out.println("What instrument's music would you like to transpose?");
-      first = console.nextLine();
+      String s = console.nextLine();
       
-      return first.toLowerCase();
+      return s.toLowerCase();
    }
    
    //takes console input for what instrument you want to transpose your music to
-   public static String transedInst(Scanner console, String second) {
+   public static String transedInst(Scanner console) {
       System.out.println("To what instrument would you like to transpose your music to?");
-      second = console.nextLine();
-      return second.toLowerCase();
+      String s = console.nextLine();
+      return s.toLowerCase();
    }
    
-   //finds the key by looking through the instrumentMap Hash Map and finding which value matches the specified instrument, then 
-   //returns the key for that value in the Hash Map as the literal key for the musical instrument
-   public static String findKeyOne(Scanner console, String first, String firstKey, Map<String, String> instrumentMap) {
+   //finds the key by looking through the instrumentMap Hash Map and finding which value matches 
+   //the specified instrument, then returns the key for that value in the Hash Map as the literal 
+   //key for the musical instrument
+   public static String findKeyOne(String first, String firstKey, Map<String,
+                                  String> instrumentMap) {
       for (Map.Entry<String, String> entry: instrumentMap.entrySet()) {
          String inst = (String)entry.getValue();
          if (inst.contains(first)) {
@@ -153,7 +157,7 @@ public class Transpose {
    
    //finds the key by looking through the instrumentMap Hash Map and finding which value matches the specified instrument, then 
    //returns the key for that value in the Hash Map as the literal key for the musical instrument
-   public static String findKeyTwo(Scanner console, String second, String secondKey, Map<String, String> instrumentMap) {
+   public static String findKeyTwo(String second, String secondKey, Map<String, String> instrumentMap) {
       for (Map.Entry<String, String> entry: instrumentMap.entrySet()) {
          String inst = (String)entry.getValue();
          if (inst.contains(second)) {
@@ -193,28 +197,39 @@ public class Transpose {
    //CONFUSED WITH THE NUMBERS.
    
    public static ArrayList<String> halfStepper(Scanner console, int halfSteps, String[] notes,
-                                              ArrayList<String> newNotes) {
+                                              ArrayList<String> oldNotes) {
       //first loop handles going to each note in the array
-      for (int i = 0; i < newNotes.size(); i++) {
+      for (int i = 0; i < oldNotes.size(); i++) {
          //second loop handles changing each note 
          for (int j = 0; j <= notes.length; j++) {
-            if (newNotes.get(i).equals(notes[j])) {
+            if (oldNotes.get(i).equals(notes[j])) {
                if ((j + halfSteps) > notes.length - 1) { 
-                  newNotes.set(i, notes[(j + halfSteps) - notes.length]);
+                  oldNotes.set(i, notes[(j + halfSteps) - notes.length]);
                } else if ((j + halfSteps) < 0) {
-                  newNotes.set(i, notes[(j + halfSteps) + notes.length]);
+                  oldNotes.set(i, notes[(j + halfSteps) + notes.length]);
                } else {
-                  newNotes.set(i, notes[j + halfSteps]);
+                  oldNotes.set(i, notes[j + halfSteps]);
                }
                break;
             } 
          }
       } 
-      return newNotes;
+      return oldNotes;
+   }
+   
+   public static void playNotes(ArrayList<String> notes, String instrument) {
+      String noteaggregate = "I[" + instrument + "] ";
+      for (int i = 0; i < notes.size() - 1; i++) {
+         noteaggregate += notes.get(i) + " ";
+      }
+      noteaggregate += notes.get(notes.size() - 1);
+      Player player = new Player();
+      player.play(noteaggregate);
    }
    
    //post: draws makeshift "sheet music" without the note length values, only their tones, using the drawing panel
    //relatively low res
+   /*
    public static void drawIt(Graphics g, ArrayList<String> newNotes, String[] notesForDraw, ArrayList<String> timeSig,
                               ArrayList<Integer> octaves) {
       
@@ -246,4 +261,5 @@ public class Transpose {
       g.drawString(timeSig.get(0), 5, CON * 4);
       g.drawString(timeSig.get(1), 5, CON * 5);
    }
+   */
 }
